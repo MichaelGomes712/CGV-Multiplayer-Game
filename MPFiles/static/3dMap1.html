@@ -1,0 +1,1508 @@
+<html>
+<!-- bootstrap buttons -->
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<!-- Latest compiled and minified Bootstrap JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+
+<head>
+    <title>Shooty Shooty</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        #main {
+            padding-top: 10px;
+        }
+
+        #blocker {
+            position: absolute;
+            width: 81%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #instructions {
+            left: 0;
+            right: 0;
+            height: 50%;
+
+            display: -webkit-box;
+            display: -moz-box;
+            display: box;
+
+            -webkit-box-orient: horizontal;
+            -moz-box-orient: horizontal;
+            box-orient: horizontal;
+
+            -webkit-box-pack: center;
+            -moz-box-pack: center;
+            box-pack: center;
+
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            box-align: center;
+
+            color: #ffffff;
+            text-align: center;
+            font-family: Arial;
+            font-size: 14px;
+            line-height: 24px;
+            text-align: center;
+
+            cursor: pointer;
+        }
+
+        #blockerEnd {
+            position: absolute;
+            width: 81%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        #instructionsEnd {
+            left: 0;
+            right: 0;
+            height: 50%;
+
+            display: -webkit-box;
+            display: -moz-box;
+            display: box;
+
+            -webkit-box-orient: horizontal;
+            -moz-box-orient: horizontal;
+            box-orient: horizontal;
+
+            -webkit-box-pack: center;
+            -moz-box-pack: center;
+            box-pack: center;
+
+            -webkit-box-align: center;
+            -moz-box-align: center;
+            box-align: center;
+
+            color: #ffffff;
+            text-align: center;
+            font-family: Arial;
+            font-size: 14px;
+            line-height: 24px;
+            text-align: center;
+
+            cursor: pointer;
+        }
+
+        #buttons {
+            position: fixed;
+            right: 5%;
+            list-style-type: none;
+            padding-top: 10px;
+            width: 10%;
+            padding: 10px;
+            text-align: center;
+        }
+
+        ul li {
+            padding-top: 10px;
+        }
+
+        #image {
+            width: 180px;
+            height: auto;
+            margin-top: 5px;
+            margin-left: 2px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px #000;
+        }
+        .table{
+            left: -30px;
+            position: relative;
+            overflow:scroll;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/static/three.js"></script>
+    <script src="https://threejs.org/build/three.min.js"></script>
+    <script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/PointerLockControls.js"></script>
+    <script src='https://cdn.jsdelivr.net/gh/mrdoob/Three.js@r92/examples/js/loaders/GLTFLoader.js'></script>
+    <script src="/static/MTLLoader.js"></script>
+    <script src="/static/OBJLoader.js"></script>
+    <script src="/static/Maps/map1.js"></script>
+</head>
+<body>
+<div id="main">
+    <div id="blocker">
+
+        <div id="instructions">
+            <span style="font-size:36px">Click to play</span>
+            <br/><br/>
+            Move: WASD<br/>
+            Jump: SPACE<br/>
+            Look: MOUSE<br/>
+            Pause: ESC
+        </div>
+    </div>
+    <div id="blockerEnd">
+        <div id="instructionsEnd">
+            <span style="font-size:36px">GAME OVER</span>
+            <br/><br/>
+            <span id="gameWinner"> This lobby will auto redirect soon </span><br/>
+        </div>
+    </div>
+    <ul id="buttons">
+        <!-- <li><img src="/UI/shooty.png" id="image" ></li> -->
+        <li><input type="button" class="btn btn-success" id="restart" onclick="restart()" value="Restart"></li>
+        <li><input type="button" class="btn btn-primary" id="return" onclick="returnMain()" value="Exit"></li>
+        <li><p id="usernameText" class="bg-primary" style="text-align: center">Guest</p></li>
+        <li><p id="killsText" class="bg-success text-left">Kills: 0</p></li>
+        <li><p id="deathsText" class="bg-danger text-left">Deaths: 0</p></li>
+        <li><p id="kdRatioText" class="bg-warning text-left">K/D ratio: 0.00</p></li>
+        <li><p id="timerText" class="bg-info text-left">Time Remaining: 0:00</p></li>
+        <li><p id="healthRemainingText" class="text-left">Health Remaining:</p></li>
+        <div class="progress">
+            <div id="health-bar" class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                 aria-valuemax="100" style="width: 100%;">
+                100%
+            </div>
+        </div>
+        <li><table class="table table-bordered table-striped mb-0" id="ScoresTable">
+            <!-- <th>Username</th>
+            <th>Kills</th>
+            <th>Deaths</th> -->
+        </table></li>
+    </ul>
+    <div>
+        <canvas id="mapCanvas" style="position: absolute; left:50px; bottom:50px; height: 300px; width: 300px"></canvas>
+    </div>
+</div>
+
+<script>
+    const socket = io();
+    var camera, scene, renderer, controls, mapCamera;
+    var prevShotTime;
+    var raycaster;
+
+    //movement related
+    var moveForward = false;
+    var canMoveBackward = false;
+    var moveBackward = false;
+    var canMoveLeft = false;
+    var moveLeft = false;
+    var canMoveRight = false;
+    var canMoveForward = false;
+    var moveRight = false;
+    var canJump = false;
+    var thetaForward;
+    var thetaRight;
+    var thetaLeft;
+    var thetaBackward;
+    var phiForward;
+    var phiRight;
+    var phiBackward;
+    var phiLeft;
+    var vecForward;
+    var vecRight;
+    var vecBackward;
+    var vecLeft;
+
+    var weapon = 0;
+    var lookVec = new THREE.Vector3(0, 0, -1);
+    var objects = [];
+    var clock;
+    var gun;
+    var gunActive = false;
+    var bullets = [];
+    var playerMesh;
+    var playerBody = new THREE.Object3D();
+    var playerMe;
+    var playerMeBody = new THREE.Object3D();
+    var clock2 = new THREE.Clock();
+    var onKeyDown;
+    var onKeyUp;
+
+    //for animated models
+    var MODEL_PATH1 = "/static/Animated Models/Steve Animations/Steve.glb";
+    var mixer, animationMe, loaderAnim, animation, fileAnimations;
+    var model, modelMe;
+    var mixerTest,fileAnimationsTest,modelMeTest;
+    var mixerMesh,animationElse,animationOther,clockElse;
+    var mixerEnd = new THREE.AnimationMixer;
+    var keysDown = [];
+    var prevTime = performance.now();
+    var velocity = new THREE.Vector3();
+    var direction = new THREE.Vector3();
+    var vertex = new THREE.Vector3();
+    var color = new THREE.Color();
+    var mainBuilding = new THREE.Object3D();
+    var bulletFired = new THREE.Object3D();
+    var font;
+    var nickname;
+    var characterType;
+    var bulletDetails;
+    var table;
+    var loaded = false;
+
+    //sound
+    const listener = new THREE.AudioListener();
+   
+    //for mirror
+    let mirrorCamera;
+    var mirrorFrame = 0;
+
+    //mini map
+    var canvas = document.getElementById("mapCanvas");
+    var renderer2 = new THREE.WebGLRenderer({canvas: canvas});
+
+    var blockerEnd = document.getElementById('blockerEnd');
+    var instructionsEnd = document.getElementById('instructionsEnd');
+    blockerEnd.style.display = 'none';
+    instructionsEnd.style.display = 'none';
+
+    //loading screen
+    var loadingManager;
+    var loadingScreen = {
+        scene: new THREE.Scene(),
+        camera: new THREE.PerspectiveCamera(90,1280/720, 0.1, 100),
+        box: new THREE.Mesh(
+            new THREE.BoxGeometry(0.5,0.5,0.5),
+            new THREE.MeshBasicMaterial({color:0xff0000})
+        )
+    }
+
+    init();
+    animate();
+
+    function init() {
+        //initialise renderer and camera
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth * .8, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.y = 10;
+        camera.getWorldDirection(lookVec);
+
+        //loading manager for async loading of maps
+        loadingManager = new THREE.LoadingManager();
+        loadingManager.onProgress = function(item, loaded, total) {
+            console.log(item, loaded, total);
+        }
+        loadingManager.onLoad = function() {
+            console.log("all objects loaded");
+            loaded = true;
+        }
+        loadingScreen.box.position.set(0,0,5);
+        loadingScreen.camera.lookAt(loadingScreen.box.position);
+        loadingScreen.scene.add(loadingScreen.box);
+
+        //import font for player names
+        const loaderFont = new THREE.FontLoader();
+        loaderFont.load('/static/helvetiker_bold.typeface.json', function (font_) {
+            font = font_;
+        });
+
+
+        camera.add(listener);
+        //Add Background bird ambiance noise
+        var backgroundAudio = new THREE.Audio(listener);
+        var backgroundAudioLoader = new THREE.AudioLoader();
+        backgroundAudioLoader.load('/static/Sounds/birdsAmbiance.mp3', function (buffer) {
+            backgroundAudio.setBuffer(buffer);
+            backgroundAudio.setLoop(true);
+            backgroundAudio.setVolume(0.4);
+        });
+
+        //set camera for mini map
+        mapCamera = new THREE.OrthographicCamera(
+            window.innerWidth / -3.4,		// Left
+            window.innerWidth / 3.4,		// Right
+            window.innerHeight / 3.4,		// Top
+            window.innerHeight / -3.4,	// Bottom
+            -1000,            			// Near
+            475);           			// Far
+        mapCamera.up = new THREE.Vector3(0, 0, -1);
+        mapCamera.lookAt(new THREE.Vector3(0, -1, 0));
+
+        clock = THREE.Clock();
+        var time = Date.now() * 0.0005;
+        prevShotTime = 0;
+
+        //define the scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color("0xffffff");
+
+        //place a light that gives no shadows
+        var light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.75);
+        light.position.set(0.5, 1, 0.75);
+        scene.add(light);
+
+        //define mouse locking controls
+        controls = new THREE.PointerLockControls(camera, renderer.domElement);
+
+        var blocker = document.getElementById('blocker');
+        var instructions = document.getElementById('instructions');
+
+        window.addEventListener('click', function () {
+            controls.lock();
+        }, false);
+
+        controls.addEventListener('lock', function () {
+            instructions.style.display = 'none';
+            blocker.style.display = 'none';
+            backgroundAudio.play();
+            gunActive = true;
+
+        });
+
+        //escape hit unlocks mouse
+        controls.addEventListener('unlock', function () {
+            backgroundAudio.stop();
+            gunActive = false;
+
+        });
+
+        //movement when key is pressed down
+        onKeyDown = function (event) {
+            switch (event.keyCode) {
+                case (38||87) && (37||65):
+                    if (canMoveForward === true && canMoveLeft === true){
+                        if(animation != "walkForwardLeft"){
+                            animation = "walkForwardLeft";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                case (38||87) && (39||68):
+                    if (canMoveForward === true && canMoveRight === true){
+                        if(animation != "walkForwardRight"){
+                            animation = "walkForwardRight";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                case (40||83) && (37||65):
+                    if (canMoveBackward === true && canMoveLeft === true){
+                        if(animation != "walkBackLeft"){
+                            animation = "walkBackLeft";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                case (40||83) && (39||68):
+                    if (canMoveBackward === true && canMoveRight === true){
+                        if(animation != "walkBackRight"){
+                            animation = "walkBackRight";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                case 38: // up
+                case 87: // w
+                    if (canMoveForward === true){
+                        moveForward = true;
+                        if(animation != "walkForward"){
+                        animation = "walkForward";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                    else moveForward = false;
+                    break;
+                case 37: // left
+                case 65: // a
+                    if (canMoveLeft === true){
+                        moveLeft = true;
+                        if(animation != "walkLeft"){
+                            animation = "walkLeft";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                    else moveLeft = false;
+                    break;
+                case 40: // down
+                case 83: // s
+                    if (canMoveBackward === true){
+                        moveBackward = true;
+                        if(animation != "walkBack"){
+                        animation = "walkBack";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                    else moveBackward = false;
+                    break;
+                case 39: // right
+                case 68: // d
+                    if (canMoveRight === true){
+                        moveRight = true;
+                        if(animation != "walkRight"){
+                            animation = "walkRight";
+                            mixer = new THREE.AnimationMixer(modelMe);
+                            let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                            animationMe = mixer.clipAction(AnimationPlay);
+                            animationMe.play();
+                        }
+                    }
+                    else moveRight = false;
+                    break;
+                case 32: // space
+                    if (canJump === true) {
+                        velocity.y += 30;
+                        canJump = false;
+                    }
+                    break;
+                case 69: // e
+                    camera.zoom = 2;
+                    camera.updateProjectionMatrix();
+                    break;
+            }
+        };
+
+        //movement when key is let up
+        onKeyUp = function (event) {
+            switch (event.keyCode) {
+                case 38: // up
+                case 87: // w
+                    if(animation != "Dying"){
+                        moveForward = false;
+                        animationMe.stop();
+                        animation = "";
+                    }
+                    break;
+                case 37: // left
+                case 65: // a
+                    if(animation != "Dying"){
+                        moveLeft = false;
+                        animationMe.stop();
+                        animation = "";
+                    }
+                    break;
+                case 40: // down
+                case 83: // s
+                    if(animation != "Dying"){
+                        moveBackward = false;
+                        animationMe.stop();
+                        animation = "";
+                    }
+                    break;
+                case 39: // right
+                case 68: // d
+                    if(animation != "Dying"){
+                        moveRight = false;
+                        animationMe.stop();
+                        animation = "";
+                    }
+                    break;
+                case 69: // e
+                    camera.zoom = 1;
+                    camera.updateProjectionMatrix();
+                    break;
+            }
+        };
+
+        //create mirror camera
+        // Create cube render target
+        var cubeRenderTarget = new THREE.WebGLCubeRenderTarget( 500, { format: THREE.RGBFormat, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter } );
+
+        //put mirror in map
+		mirrorCamera = new THREE.CubeCamera(1,1000,cubeRenderTarget);
+		mirrorCamera.position.set(23,15,-55);
+		scene.add(mirrorCamera);
+
+		//create a mirror
+		let mirrorMaterial = new THREE.MeshBasicMaterial({
+			envMap: mirrorCamera.renderTarget
+		});
+
+		let mirrorGeo = new THREE.BoxGeometry(1,10,5);
+		let mirror = new THREE.Mesh(mirrorGeo,mirrorMaterial);
+		mirror.scale.set(2,2,2);
+		mirror.position.set(23,15,-55);
+		scene.add(mirror);
+
+        //make model of bullet using different objects and adding it to a 3DObject
+        var bulletCylinder = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.2), new THREE.MeshPhongMaterial({
+            color: 0xC0C0C0,				//0xFFD700 = gold
+            specular: 0x222222,
+            shininess: 16, wireframe: false
+        }));
+        bulletCylinder.receiveShadow = true;
+        bulletCylinder.castShadow = true;
+        bulletCylinder.rotation.set(Math.PI / 2, 0, 0);
+
+        var bulletCap = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.2), new THREE.MeshPhongMaterial({
+            color: 0xC0C0C0,
+            specular: 0x222222,
+            shininess: 16, wireframe: false
+        }));
+        bulletCap.receiveShadow = true;
+        bulletCap.castShadow = true;
+        bulletCap.position.set(0, 0, 0.2);
+        bulletCap.rotation.set(Math.PI / 2, 0, 0);
+
+        bulletFired.add(bulletCylinder);
+        bulletFired.add(bulletCap);
+        bulletFired.scale.set(2, 2, 2);
+
+        //on mouse click when the controls are locked
+        var onMouseDown = function (event) {
+            if((performance.now() / 1000) - prevShotTime >= 0.5 && gunActive) { //allows player to only fire once every half second
+                prevShotTime = performance.now() / 1000;
+                camera.getWorldDirection(lookVec);
+                //clone bullet object
+                var bullet = bulletFired.clone();
+                //boring trigonometry and maths to place bullet at barrel
+                var vecTest = new THREE.Vector3(Math.cos(phiRight), 0, -Math.sin(thetaRight)).normalize();
+                var initialPos = new THREE.Vector3(camera.position.x + vecTest.x * 1.5, camera.position.y -2 + vecTest.y * 1.5, camera.position.z + vecTest.z * 1.5);
+                var barrelPos = new THREE.Vector3().addVectors(initialPos, lookVec.multiplyScalar(5));
+                //put bullet facing correct direction
+                bullet.lookAt(lookVec);
+                //add limiter to range of bullet fire so it will not fire if looking directly up and down
+                if (barrelPos.y < camera.position.y && barrelPos.y > camera.position.y-5) {
+                    //bullet gunshot sound
+                    var gunshot = new THREE.Audio(listener);
+                    var audioLoader = new THREE.AudioLoader();
+                    audioLoader.load('/static/Sounds/CGVLaser.mp3', function (buffer) {
+                        gunshot.setBuffer(buffer);
+                        gunshot.setLoop(false);
+                        gunshot.setVolume(1);
+                        gunshot.play();
+                    });
+                    //place bullet at barrel
+                    bullet.position.set(barrelPos.x, barrelPos.y, barrelPos.z);
+                    bullet.velocity = new THREE.Vector3();
+                    bullet.velocity.copy(lookVec);
+                    animation = "Gunplay";
+                    mixer = new THREE.AnimationMixer(modelMe);
+                    let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                    animationMe = mixer.clipAction(AnimationPlay);
+                    animationMe.play();
+                    //send bullet and its state to server to be made
+                    bulletDetails = {
+                        x: barrelPos.x,
+                        y: barrelPos.y,
+                        z: barrelPos.z,
+                        lookAt: bullet.velocity,
+                        animation: animation
+                    };
+                    socket.emit('shoot', bulletDetails);
+                }
+            }
+        };
+
+        //add listeners for movement and mouse click
+        document.addEventListener('keydown', onKeyDown, false);
+        document.addEventListener('keyup', onKeyUp, false);
+        document.addEventListener('mousedown', onMouseDown, false);
+
+        //general purpose raycasters
+        raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0).normalize, 0, 10);
+        raycasterSA = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+        raycasterSD = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+        raycasterWA = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+        raycasterWD = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+        raycasterA = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+        raycasterW = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+        raycasterS = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+        raycasterD = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+
+        //create client mesh and add it to the camera
+        console.log('create player mesh');
+        playerMe = new THREE.Group();
+        playerMe.castShadow = true;
+        playerMe.used = true;
+        //playerMe.position.set(0,-2,0);
+        playerMeBody.position.set(0,0,0);
+        if (!playerMe.getObjectByName('body')) {
+            //make player cube
+            console.log('create body mesh');
+            var loader = new THREE.GLTFLoader(loadingManager);
+            loader.load(MODEL_PATH1,function(gltf) {
+                modelMe = gltf.scene;
+                modelMe.name = 'body';
+                fileAnimations = gltf.animations;
+                modelMe.traverse(o => {
+                if (o.isMesh) {
+                    o.castShadow = true;
+                    o.receiveShadow = true;
+                }
+                });
+                modelMe.rotation.set(0, Math.PI, 0);
+                modelMe.scale.set(0.8, 0.8, 0.8);
+                modelMe.position.set(0,-8,0);                                    
+                playerMeBody.add(modelMe);                    
+                camera.add(modelMe);
+                animation = "Gunplay";
+                mixer = new THREE.AnimationMixer(modelMe);
+                let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+                animationMe = mixer.clipAction(AnimationPlay);
+            },
+            undefined, function(error) {
+                console.log("not loading model");
+                }
+            );                  
+            //add player gun model to camera
+            var mtlloader = new THREE.MTLLoader(loadingManager);
+            mtlloader.load("/static/Models/ump47.mtl", function (materials) {
+                materials.preload();
+                var objloader = new THREE.OBJLoader(loadingManager);
+                objloader.setMaterials(materials);
+                objloader.load("/static/Models/ump47.obj", function (gun) {
+                    gun.traverse(function (node) {
+                        if (node instanceof THREE.Mesh) {
+                            node.castShadow = true;
+                            node.receiveShadow = true;
+                        }
+                    });
+                    gun.scale.set(0.5, 0.5, 0.5);
+                    gun.rotation.set(0, Math.PI/2, 0);
+                    gun.position.set(1.75, -2.8, -3);
+                    playerMe.add(gun);
+                    camera.add(gun);
+                });
+            });
+        //add player nametag to character using font loaded above
+            if (font) {
+                if (!playerMe.getObjectByName('nickname')) {
+                    console.log('create nickname mesh');
+                    mesh = new THREE.Mesh(
+                        new THREE.TextGeometry("me",
+                        {font: font, size: 1, height: 1}),
+                        new THREE.MeshBasicMaterial({color: 'white', side: THREE.DoubleSide}),
+                    );
+                    mesh.name = 'nickname';
+                    playerMe.add(mesh);
+                    mesh.position.set(2, camera.position.y - 6, 0);
+                    mesh.rotation.y = Math.PI;
+                }
+            }
+        }
+
+        scene.add(controls.getObject());
+
+        //load all of map 1
+        loadMap1();
+
+        //wait a bit and ask for the player username
+        setTimeout(() => {
+            //get nickname from url parameter
+            var map = document.location.search.replace(/^.*?\=/,''); 
+            var query = document.location.search; 
+            const params = new URLSearchParams(query);
+            nickname = params.get('nickname');          
+
+            //send nickname to function
+            gameStart(nickname,animation);
+            window.addEventListener('resize', onWindowResize, false);
+        }, 2000);
+    }
+
+    //return to main menu
+    function returnMain() {
+        window.location.href = "https://lamp.ms.wits.ac.za/~cgv5/";
+    }
+
+    //refresh page
+    function restart() {
+        window.location.reload();
+    }
+
+    //functions for asynchronus loading of objects
+    function makeTexture(imageURL, material) {
+        function callback() {
+            if (material) {
+                material.map = texture;
+                material.needsUpdate = true;
+            }
+            render();  // render scene with texture that has just been loaded.
+        }
+        var texture = THREE.ImageUtils.loadTexture(imageURL, undefined, callback);
+        return texture;
+    }
+    function loadModel(modelURL) {
+        function callback(geometry) {
+            // To be executed when the model has fully loaded.  The parameter
+            // is geometry that can be used for a THREE.Mesh object.
+            render();  // Render the scene with the newly added objects.
+        }
+        var loader = new THREE.LegacyJSONLoader();
+        try {
+            loader.load(modelURL, callback);
+        } catch (e) {
+            // Note: Chrome gives an error if loading from local file system.
+            console.log("Error loading model from " + modelURL);
+        }
+    }
+
+    //resize window
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    //dynamic skybox
+    function rotateSky(speed) {
+        skybox.rotation.y -= speed;
+    }
+
+    //dynamic objects in world
+    function rotateWindmill(speed) {
+        windmill.rotation.x += speed;
+        windmill2.rotation.x += speed;
+    }
+
+    function animate() {
+        //if still loading show loading screen
+        if (!loaded) {
+            requestAnimationFrame(animate);
+            loadingScreen.box.rotation.x += 0.1;
+            loadingScreen.box.rotation.z += 0.1;
+            renderer.render(loadingScreen.scene, loadingScreen.camera);
+            return;
+        }
+
+        //alot of trig to get vectors that lie in front of player,behind,left and right relative to where you are looking
+        camera.getWorldDirection(lookVec);
+        thetaForward = Math.asin(lookVec.x);
+        phiForward = Math.acos(lookVec.z);
+        vecForward = new THREE.Vector3(Math.sin(thetaForward), 0, Math.cos(phiForward)).normalize();
+
+        thetaRight = thetaForward + Math.PI;
+        phiRight = phiForward + Math.PI;
+        vecRight = new THREE.Vector3(Math.cos(phiRight), 0, -Math.sin(thetaRight)).normalize();
+
+        thetaBackward = thetaForward + Math.PI;
+        phiBackward = phiForward + Math.PI;
+        vecBackward = new THREE.Vector3(Math.sin(thetaBackward), 0, Math.cos(phiBackward)).normalize();
+
+        thetaLeft = thetaForward;
+        phiLeft = phiForward;
+        vecLeft = new THREE.Vector3(Math.cos(phiLeft), 0, -Math.sin(thetaLeft)).normalize();
+
+        //move skybox
+        rotateSky(0.001);
+        if (mixer) {
+            mixer.update(clock2.getDelta());
+        }
+        if (mixerEnd != undefined) {
+            mixerEnd.update(clock2.getDelta());
+        }
+        
+        if(mirrorFrame==0){
+            mirrorCamera.update(renderer,scene);
+        }
+  
+        if (mirrorFrame==1000){
+            mirrorFrame = 0;
+            mirrorCamera.update(renderer,scene);
+        }else{
+            mirrorFrame++;
+        }
+  
+        requestAnimationFrame(animate);
+
+        //collision detection using rays above to see if the person can actually move in either direction
+        //prevents players from phasing through models
+        for (let i = 0; i < 10; ++i) {
+            raycasterW = new THREE.Raycaster(new THREE.Vector3(controls.getObject().position.x,controls.getObject().position.y-5 + 1 * i, controls.getObject().position.z), new THREE.Vector3(Math.sin(thetaForward), 0, Math.cos(phiForward)).normalize(), 0, 10);
+            var collisionResults = raycasterW.intersectObjects(objects, true);
+            if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                canMoveForward = false;
+                moveForward = false;
+                break;
+            } else if (i == 9) {
+                canMoveForward = true;
+            }
+        }
+
+        for (let i = 0; i < 10; ++i) {
+            raycasterA = new THREE.Raycaster(new THREE.Vector3(controls.getObject().position.x, controls.getObject().position.y-5 + 1 * i, controls.getObject().position.z), new THREE.Vector3(Math.cos(phiLeft), 0, -Math.sin(thetaLeft)).normalize(), 0, 10);
+            var collisionResults = raycasterA.intersectObjects(objects, true);
+            if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                canMoveLeft = false;
+                moveLeft = false;
+                break;
+            } else if (i == 9) {
+                canMoveLeft = true;
+            }
+        }
+
+        for (let i = 0; i < 10; ++i) {
+            raycasterS = new THREE.Raycaster(new THREE.Vector3(controls.getObject().position.x, controls.getObject().position.y-5 + 1 * i, controls.getObject().position.z), new THREE.Vector3(Math.sin(thetaBackward), 0, Math.cos(phiBackward)).normalize(), 0, 10);
+            var collisionResults = raycasterS.intersectObjects(objects, true);
+            if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                canMoveBackward = false;
+                moveBackward = false;
+                break;
+            } else if (i == 9) {
+                canMoveBackward = true;
+            }
+        }
+
+        for (let i = 0; i < 10; ++i) {
+            raycasterD = new THREE.Raycaster(new THREE.Vector3(controls.getObject().position.x, controls.getObject().position.y-5 + 1 * i, controls.getObject().position.z), new THREE.Vector3(Math.cos(phiRight), 0, -Math.sin(thetaRight)).normalize(), 0, 10);
+            var collisionResults = raycasterD.intersectObjects(objects, true);
+            if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                canMoveRight = false;
+                moveRight = false;
+                break;
+            } else if (i == 9) {
+                canMoveRight = true;
+            }
+        }
+        //check if object below to jump
+        raycaster = new THREE.Raycaster(new THREE.Vector3(controls.getObject().position.x, controls.getObject().position.y, controls.getObject().position.z), new THREE.Vector3(0, -1, 0).normalize(), 0, 10);
+        var intersections = raycaster.intersectObjects(objects,true);
+        var onObject = intersections.length > 0;
+
+        //check if object above to have space to jump
+        raycasterAbove = new THREE.Raycaster(new THREE.Vector3(controls.getObject().position.x, controls.getObject().position.y, controls.getObject().position.z), new THREE.Vector3(0, 1, 0).normalize(), 0, 10);
+        var intersectionsAbove = raycasterAbove.intersectObjects(objects,true);
+        var objectAbove = intersectionsAbove.length > 0;
+
+        var time = performance.now();
+        var delta = (time - prevTime) / 1000;
+
+        //speed of movement being defined
+        velocity.x -= velocity.x * 15.0 * delta;
+        velocity.z -= velocity.z * 15.0 * delta;
+
+        //height of jump defined
+        velocity.y -= 9.8 * 3 * delta;
+
+        direction.z = Number(moveForward) - Number(moveBackward);
+        direction.x = Number(moveRight) - Number(moveLeft);
+        direction.normalize(); // this ensures consistent movements in all directions
+
+        if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
+        if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+
+        if(objectAbove === true && intersectionsAbove[0].distance < 5){
+            canJump = false;
+            velocity.y = -velocity.y;
+        }
+        else{
+            if (onObject === true) {//on object to jump off
+                velocity.y = Math.max(0, velocity.y);
+                canJump = true;
+            }
+        }
+
+        //move camera and anything attached to camera
+        controls.moveRight(-velocity.x * delta);
+        playerMeBody.position.x = -velocity.x * delta;
+        controls.moveForward(-velocity.z * delta);
+        playerMeBody.position.z = -velocity.z * delta;
+        controls.getObject().position.y += (velocity.y * delta);
+        playerMeBody.position.y = (velocity.y * delta);
+
+        if (controls.getObject().position.y < 10) {
+            velocity.y = 0;
+            controls.getObject().position.y = 10;
+            playerMeBody.position.y = 10;
+            canJump = true;
+        }
+
+        prevTime = time;
+
+        //send new player position to server
+        socket.emit('movement', {x: camera.position.x, y: camera.position.y, z: camera.position.z, lookAt: lookVec,animation: animation,time: clock2.getDelta()});
+
+        //render scene and mini map
+        renderer.render(scene, camera);
+        // mirrorCamera.updateCubeMap(renderer,scene);
+        renderer2.setSize(250 * 1.8, 250)
+        renderer2.render(scene, mapCamera);
+    }
+
+    //once gameStart function is called
+    function gameStart(nickname,animation) {
+        //add nickname to ingame menu
+        if (nickname !== null) {
+            document.getElementById("usernameText").textContent = nickname;
+        }
+
+        //try randomly spawn player in suitable position and not in existing objects using raycasting and trig again 
+        var randomList = [1, -1];
+        var inObject = true;
+        while (inObject == true) {
+            inObject = false;
+            camera.position.set(Math.random() * 250 * randomList[getRandomInt(2)], 10, Math.random() * 250 * randomList[getRandomInt(2)]);
+            var look = new THREE.Vector3(Math.random() * 250 * randomList[getRandomInt(2)], 10, Math.random() * 250 * randomList[getRandomInt(2)]);
+            camera.lookAt(look);
+
+            camera.getWorldDirection(lookVec);
+            thetaForward = Math.asin(lookVec.x);
+            phiForward = Math.acos(lookVec.z);
+            vecForward = new THREE.Vector3(Math.sin(thetaForward), 0, Math.cos(phiForward)).normalize();
+
+            thetaRight = thetaForward + Math.PI;
+            phiRight = phiForward + Math.PI;
+            vecRight = new THREE.Vector3(Math.cos(phiRight), 0, -Math.sin(thetaRight)).normalize();
+
+            thetaBackward = thetaForward + Math.PI;
+            phiBackward = phiForward + Math.PI;
+            vecBackward = new THREE.Vector3(Math.sin(thetaBackward), 0, Math.cos(phiBackward)).normalize();
+
+            thetaLeft = thetaForward;
+            phiLeft = phiForward;
+            vecLeft = new THREE.Vector3(Math.cos(phiLeft), 0, -Math.sin(thetaLeft)).normalize();
+
+            for (let i = 0; i < 10; ++i) {
+                raycasterW = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.sin(thetaForward), 0, Math.cos(phiForward)).normalize(), 0, 10);
+                var collisionResults = raycasterW.intersectObjects(objects, true);
+                if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                    inObject = true;
+                }
+            }
+
+            for (let i = 0; i < 10; ++i) {
+                raycasterA = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.cos(phiLeft), 0, -Math.sin(thetaLeft)).normalize(), 0, 10);
+                var collisionResults = raycasterA.intersectObjects(objects, true);
+                if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                    inObject = true;
+                }
+            }
+
+            for (let i = 0; i < 10; ++i) {
+                raycasterS = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.sin(thetaBackward), 0, Math.cos(phiBackward)).normalize(), 0, 10);
+                var collisionResults = raycasterS.intersectObjects(objects, true);
+                if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                    inObject = true;
+                }
+            }
+
+            for (let i = 0; i < 10; ++i) {
+                raycasterD = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.cos(phiRight), 0, -Math.sin(thetaRight)).normalize(), 0, 10);
+                var collisionResults = raycasterD.intersectObjects(objects, true);
+                if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                    inObject = true;
+                }
+            }
+        }
+        //If spawn location is fine then send start position details to server
+        socket.emit('game-start', {
+            x: camera.position.x,
+            y: camera.position.y,
+            z: camera.position.z,
+            lookAt: lookVec,
+            nickname: nickname,
+            animation: animation,
+            time: clock2.getDelta()
+        });
+    }
+
+    //when server says game ended
+    socket.on('end', (players) => {
+        var winner;
+        var maxKills = -10;
+        var minDeaths = 1000;
+        //find winner
+        Object.values(players).forEach((player) => {
+            if(player.kills > maxKills){
+                maxKills = player.kills;
+                minDeaths = player.deaths;
+                winner = player.nickname;
+            }
+            else if(player.kills === maxKills){
+                if(minDeaths < player.deaths){
+                    minDeaths = player.deaths;
+                    winner = player.nickname;
+                }
+            }
+        });
+        //display winner
+        console.log(`player ${winner} with ${maxKills} kills and ${minDeaths}  deaths wins`);
+        if (maxKills === 1 && minDeaths === 1) {
+            document.getElementById("gameWinner").innerHTML = `${winner} with ${maxKills} kill and ${minDeaths} death wins`;
+        } else if (maxKills === 1 && !(minDeaths === 1)) {
+            document.getElementById("gameWinner").innerHTML = `${winner} with ${maxKills} kill and ${minDeaths} deaths wins`;
+        } else if (!(maxKills === 1) && minDeaths === 1) {
+            document.getElementById("gameWinner").innerHTML = `${winner} with ${maxKills} kills and ${minDeaths} death wins`;
+        } else {
+            document.getElementById("gameWinner").innerHTML = `${winner} with ${maxKills} kills and ${minDeaths} deaths wins`;
+        }
+    });
+
+    //array containg all mesh objects of other players and bullets
+    const Meshes = [];
+    const Body = [];
+    const Mixers = [];
+    const prevAnim = [];
+    //server updates all sockets every millisecond
+    socket.on('state', (players, bullets, gameTimer) => {
+        //if game is finished
+        if (gameTimer <= 0 && gameTimer != null) {
+            //remove mouse controls and active gun
+            blockerEnd.style.display = 'block';
+            instructionsEnd.style.display = '';
+            gunActive = false;
+            controls.unlock();
+            controls.disconnect();
+            if (gameTimer <= -1500) {
+                //TODO RETURN TO HOME PAGE
+            }
+            } else { //game is not done
+                setTimeout(() => {
+                    rotateWindmill(0.005);  //rotate windmills
+                }, 2000);
+            //put time remaining on in game menu
+                document.getElementById('timerText').innerText = "Time Remaining: " + millisecondsToTime(gameTimer);
+
+            //set all meshes used to false
+                Object.values(Meshes).forEach((mesh) => {
+                    mesh.used = false;
+                });
+
+            //for each player defined on server
+            Object.values(players).forEach((player) => {
+                let playerMesh = Meshes[player.id];
+                let bodyMesh = Body[player.id];
+                let mixerMesh = Mixers[player.id];
+                if (!playerMesh) { //mesh doesnot exist
+                    if (player.nickname == nickname) {
+                        console.log('create my player mesh');
+                        playerMesh = playerMe;
+                        playerMesh.castShadow = true;
+                        Meshes[player.id] = playerMesh; //assign player mesh made in initialise
+                        bodyMesh = playerMeBody;
+                        Body[player.id] = bodyMesh;
+                    } else {
+                        console.log('create other player mesh');
+                        playerMesh = new THREE.Group(); //create new mesh
+                        bodyMesh = new THREE.Group();
+                        mixerMesh = new THREE.AnimationMixer();
+                        playerMesh.castShadow = true;
+                        Meshes[player.id] = playerMesh; 
+                        Body[player.id] = bodyMesh; 
+                        Mixers[player.id] = mixerMesh;          
+                        objects.push(playerMesh);
+                        scene.add(playerMesh);
+                        scene.add(bodyMesh);     
+                    }
+                }
+                //set so playerMesh is used
+                playerMesh.used = true;
+                //place in correct position given by server and look in correct direction
+                playerMesh.position.set(player.x, player.y, player.z);
+                bodyMesh.scale.set(0.8, 0.8, 0.8); 
+                bodyMesh.position.set(player.x, player.y, player.z);
+                bodyMesh.lookAt(new THREE.Vector3().addVectors(new THREE.Vector3(player.x, player.y, player.z), new THREE.Vector3(-player.lookAt.x, 0, -player.lookAt.z)));
+                
+                var sum = new THREE.Vector3().addVectors(new THREE.Vector3(player.x, player.y, player.z), new THREE.Vector3(-player.lookAt.x, -player.lookAt.y, -player.lookAt.z))
+
+                playerMesh.lookAt(sum);
+                if (!playerMesh.getObjectByName('nickname') && playerMesh!=playerMe) { //if it does not have a body
+                    console.log('create body mesh update');
+                        var name = "Steve";
+                        var loader = new THREE.GLTFLoader(loadingManager);
+                        loader.load(MODEL_PATH1,function(gltf) {
+                            model = gltf.scene;
+                            let fileAnimations = gltf.animations;
+                            model.traverse(o => {
+                                if (o.isMesh) {
+                                    o.castShadow = true;
+                                    o.receiveShadow = true;
+                                }
+                            });
+                            model.rotation.set(0, Math.PI, 0);
+                            model.scale.set(0.8, 0.8, 0.8);                   
+                            model.position.set(0,-10,0); 
+                            bodyMesh.add(model);
+                            animationElse = "Gunplay";
+                            mixerMesh = new THREE.AnimationMixer(model);
+                            Mixers[player.id] = mixerMesh;
+                            let AnimationPlayElse = THREE.AnimationClip.findByName(fileAnimations, animationOther);
+                            animationElse = mixerMesh.clipAction(AnimationPlayElse);
+                            objects.push(bodyMesh);
+                        });                        
+                    //add player gun model to camera
+                    var mtlloader = new THREE.MTLLoader(loadingManager);
+                    mtlloader.load("/static/Models/ump47.mtl", function (materials) {
+                        materials.preload();
+                        var objloader = new THREE.OBJLoader(loadingManager);
+                        objloader.setMaterials(materials);
+                            objloader.load("/static/Models/ump47.obj", function (gun) {
+                                gun.traverse(function (node) {
+                                    if (node instanceof THREE.Mesh) {
+                                        node.castShadow = true;
+                                        node.receiveShadow = true;
+                                    }
+                                });
+                                gun.scale.set(0.5, 0.5, 0.5);
+                                gun.rotation.set(0, Math.PI / 2, 0);
+                                gun.position.set(2, -2, -3);
+                                playerMesh.add(gun);
+                            });
+                    });
+                }
+                else if(playerMesh != playerMe){ //player is not yourself
+                    if(mixerMesh._root != undefined){
+                        animationOther = player.animation;
+                        if(prevAnim[player.id] != undefined){   //set default animation
+                            if(animationOther == "" || animationOther == undefined){
+                                animationOther = "Gunplay";
+                                mixerMesh.stopAllAction();
+                            }
+                            clockElse = player.time;
+                            if(prevAnim[player.id] == animationOther){ //if animation is same just update
+                                mixerMesh.update(0.001);
+                            }
+                            else{ //set new animation and play
+                                mixerMesh = new THREE.AnimationMixer(mixerMesh.getRoot());
+                                let AnimationPlayElse = THREE.AnimationClip.findByName(fileAnimations, animationOther);
+                                animationElse = mixerMesh.clipAction(AnimationPlayElse);
+                                animationElse.play();
+                                mixerMesh.update(0.001);
+                            }                                                 
+                        }
+                        Mixers[player.id] = mixerMesh;
+                        prevAnim[player.id] = animationOther;  
+                    }
+                }
+                //add player nametag
+                if (font) {
+                    if (!playerMesh.getObjectByName('nickname')) {
+                        console.log('create nickname mesh');
+                        mesh = new THREE.Mesh(
+                            new THREE.TextGeometry(player.nickname,
+                                {font: font, size: 1, height: 1}),
+                            new THREE.MeshBasicMaterial({color: 'white', side: THREE.DoubleSide}),
+                        );
+                        mesh.name = 'nickname';
+                        playerMesh.add(mesh);
+                        mesh.position.set(2, camera.position.y - 6, 0);
+                        mesh.rotation.y = Math.PI;
+                    }
+                }
+                playerMesh.position.set(player.x,player.y-1.5,player.z);
+            });
+            //Update tables and insert users for others to see
+            //delete old records      
+            $("#ScoresTable tr").remove(); 
+            //insert header
+            table = document.getElementById("ScoresTable");
+            var row = table.insertRow(0);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            
+            cell1.innerHTML = "Username";
+            cell2.innerHTML = "Kills";
+            cell3.innerHTML = "Deaths";
+            var count = 0;
+            //loop for each player adding to table
+            Object.values(players).forEach((player)=> {
+                var name = player.nickname;
+                var kills = player.kills;
+                var deaths = player.deaths;
+              
+                var playerRow = table.insertRow(-1);
+
+                var cell1 = playerRow.insertCell(0);
+                var cell2 = playerRow.insertCell(1);
+                var cell3 = playerRow.insertCell(2);
+                
+                cell1.innerHTML = name;
+                cell2.innerHTML = kills;
+                cell3.innerHTML = deaths;
+                count++;
+            });
+            //Sort Table
+            if (count>1){
+                sortTable();
+            }
+
+            //for each bullet defined on server
+            Object.values(bullets).forEach((bullet) => {
+                let mesh = Meshes[bullet.id];
+                //if bullet hits scene object
+                raycaster = new THREE.Raycaster(new THREE.Vector3(bullet.x, bullet.y, bullet.z), new THREE.Vector3(bullet.lookAt.x, bullet.lookAt.y, bullet.lookAt.z), 0, 10);
+                var collisionResults = raycaster.intersectObjects(objects, true);
+                //remove it
+                if (collisionResults.length > 0 && collisionResults[0].distance < 2) {
+                    mesh.used = false;
+                    socket.emit('removeSpecBullet', {id: bullet.id, player: bullet.player});
+                } else {
+                    //add bullet in scene with updated position
+                    if (!mesh) {
+                        mesh = bulletFired.clone();
+                        mesh.castShadow = true;
+                        Meshes[bullet.id] = mesh;
+                        scene.add(mesh);
+                    }
+                    mesh.used = true;
+                    mesh.position.set(bullet.x, bullet.y, bullet.z);
+                    mesh.lookAt(bullet.x + bullet.lookAt.x, bullet.y + bullet.lookAt.y, bullet.z + bullet.lookAt.z);
+                }
+            });
+
+            // Clear all meshes where used was false
+            Object.keys(Meshes).forEach((key) => {
+                const mesh = Meshes[key];
+                const body = Body[key]
+                if (!mesh.used) {
+                    console.log('removing mesh', key);
+                    for (let i = objects.length - 1; i >= 0; --i) {
+                        if (objects[i] == mesh) {
+                            objects.splice(i, 1);
+                        }
+                        if (objects[i] == body) {
+                            objects.splice(i, 1);
+                        }
+                    }
+                    scene.remove(mesh);
+                    scene.remove(body);
+                    console.log("remove bullet");
+                    mesh.traverse((mesh2) => {
+                        if (mesh2.geometry) {
+                            mesh2.geometry.dispose();
+                        }
+                    });
+                    delete Meshes[key];
+                    delete Body[key];
+                }
+            });
+        }
+    });
+
+    //Sort table function
+    function sortTable() {
+                var table, rows, switching, i, x, y, shouldSwitch;
+                table = document.getElementById("ScoresTable");
+                switching = true;
+                /* Make a loop that will continue until
+                no switching has been done: */
+                while (switching) {
+                    // Start by saying: no switching is done:
+                    switching = false;
+                    rows = table.rows;
+                    /* Loop through all table rows (except the
+                    first, which contains table headers): */
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        // Start by saying there should be no switching:
+                        shouldSwitch = false;
+                        /* Get the two elements you want to compare,
+                        one from current row and one from the next: */
+                        x = rows[i].getElementsByTagName("TD")[1];
+                        y = rows[i + 1].getElementsByTagName("TD")[1];
+                        // Check if the two rows should switch place:
+                        if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                            // If so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                        
+                    }
+                    if (shouldSwitch) {
+                        /* If a switch has been marked, make the switch
+                        and mark that a switch has been done: */
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                    }
+                }
+            }
+
+    //helper function for random spawn
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+
+    //take milliseconds to actual time
+    function millisecondsToTime(milliseconds) {
+        var seconds = milliseconds / 1000;
+        var minutesDivisor = seconds % (60 * 60);
+        var secondsDivisor = minutesDivisor % 60;
+        const zeroPad = (num, places) => String(num).padStart(places, '0')
+        return Math.floor(minutesDivisor / 60) + ":" + zeroPad(Math.ceil(secondsDivisor), 2);
+    }
+
+    //when player dies
+    socket.on('dead', (player) => {
+        //play death sound
+        var damage = new THREE.Audio(listener);
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/static/Sounds/jawaDeath.mp3', function (buffer) {
+            damage.setBuffer(buffer);
+            damage.setLoop(false);
+            damage.setVolume(1);
+            damage.play();
+        })
+        //update kills,deaths and k/d on ingame menu
+        document.getElementById('deathsText').innerText = "Deaths: " + player.deaths;
+        if (player.deaths === 0) {
+            document.getElementById('kdRatioText').innerText = "K/D Ratio: " + player.kills.toFixed(2);
+        } else {
+            document.getElementById('kdRatioText').innerText = "K/D Ratio: " + (player.kills / player.deaths).toFixed(2);
+        }
+        blocker.style.display = '';
+
+        //key up all keys
+        document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':37}));
+        document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':38}));
+        document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':39}));
+        document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':40}));
+        document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':69}));
+        document.removeEventListener('keydown', onKeyDown, false);
+        document.removeEventListener('keyup', onKeyUp, false);
+
+        //play dying animation
+        animation = "Dying";
+        mixer = new THREE.AnimationMixer(modelMe);
+        let AnimationPlay = THREE.AnimationClip.findByName(fileAnimations, animation);
+        animationMe = mixer.clipAction(AnimationPlay);
+        animationMe.play();
+
+        //find new spawn point
+        setTimeout(() => {
+            var randomList = [1, -1];
+            blocker.style.display = 'none';
+            var inObject = true;
+            while (inObject == true) {
+                inObject = false;
+                camera.position.set(Math.random() * 250 * randomList[getRandomInt(2)], 10, Math.random() * 250 * randomList[getRandomInt(2)]);
+                var look = new THREE.Vector3(Math.random() * 250 * randomList[getRandomInt(2)], 10, Math.random() * 250 * randomList[getRandomInt(2)]);
+                camera.lookAt(look);
+
+                camera.getWorldDirection(lookVec);
+                thetaForward = Math.asin(lookVec.x);
+                phiForward = Math.acos(lookVec.z);
+                vecForward = new THREE.Vector3(Math.sin(thetaForward), 0, Math.cos(phiForward)).normalize();
+
+                thetaRight = thetaForward + Math.PI;
+                phiRight = phiForward + Math.PI;
+                vecRight = new THREE.Vector3(Math.cos(phiRight), 0, -Math.sin(thetaRight)).normalize();
+
+                thetaBackward = thetaForward + Math.PI;
+                phiBackward = phiForward + Math.PI;
+                vecBackward = new THREE.Vector3(Math.sin(thetaBackward), 0, Math.cos(phiBackward)).normalize();
+
+                thetaLeft = thetaForward;
+                phiLeft = phiForward;
+                vecLeft = new THREE.Vector3(Math.cos(phiLeft), 0, -Math.sin(thetaLeft)).normalize();
+
+                for (let i = 0; i < 10; ++i) {
+                    raycasterW = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.sin(thetaForward), 0, Math.cos(phiForward)).normalize(), 0, 10);
+                    var collisionResults = raycasterW.intersectObjects(objects, true);
+                    if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                        inObject = true;
+                    }
+                }
+
+                for (let i = 0; i < 10; ++i) {
+                    raycasterA = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.cos(phiLeft), 0, -Math.sin(thetaLeft)).normalize(), 0, 10);
+                    var collisionResults = raycasterA.intersectObjects(objects, true);
+                    if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                        inObject = true;
+                    }
+                }
+
+                for (let i = 0; i < 10; ++i) {
+                    raycasterS = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.sin(thetaBackward), 0, Math.cos(phiBackward)).normalize(), 0, 10);
+                    var collisionResults = raycasterS.intersectObjects(objects, true);
+                    if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                        inObject = true;
+                    }
+                }
+
+                for (let i = 0; i < 10; ++i) {
+                    raycasterD = new THREE.Raycaster(new THREE.Vector3(camera.position.x, 2.5 + 1 * i, camera.position.z), new THREE.Vector3(Math.cos(phiRight), 0, -Math.sin(thetaRight)).normalize(), 0, 10);
+                    var collisionResults = raycasterD.intersectObjects(objects, true);
+                    if (collisionResults.length > 0 && collisionResults[0].distance < 10) {
+                        inObject = true;
+                    }
+                }
+            }
+            document.getElementById("health-bar").classList.remove('progress-bar-danger');
+            //set health back to 100 on ingame menu
+            $("#health-bar")
+                .css("width", 100 + "%")
+                .attr("aria-valuenow", 100)
+                .text(100 + "%")
+
+            //add eventListener back
+            document.addEventListener('keydown', onKeyDown, false);
+            document.addEventListener('keyup', onKeyUp, false);
+            document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':37}));
+            document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':38}));
+            document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':39}));
+            document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':40}));
+            document.dispatchEvent(new KeyboardEvent('keyup',  {'keyCode':69}));
+            //update server with new player positions
+            socket.emit('update', {x: camera.position.x, y: camera.position.y, z: camera.position.z, lookAt: look, animation: animation, time: clock2.getDelta()});
+            animationMe.stop();
+            animation = "Gunplay"; 
+        }, 4000);       
+    });
+
+    //when player is hit
+    socket.on('damage', (player) => {
+        //play hit sound
+        var damage = new THREE.Audio(listener);
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/static/Sounds/jawaHit.mp3', function (buffer) {
+            damage.setBuffer(buffer);
+            damage.setLoop(false);
+            damage.setVolume(1);
+            damage.play();
+        });
+        //decrease health bar and chenge colour appropriately
+        if (player.health < 100 && player.health > 50) {
+            document.getElementById("health-bar").classList.add('progress-bar-success');
+        } else if (player.health <= 50 && player.health > 20) {
+            document.getElementById("health-bar").classList.remove('progress-bar-success');
+            document.getElementById("health-bar").classList.add('progress-bar-warning');
+        } else if (player.health <= 20 && player.health >= 0) {
+            document.getElementById("health-bar").classList.remove('progress-bar-warning');
+            document.getElementById("health-bar").classList.add('progress-bar-danger');
+        }
+        //update health bar
+        $("#health-bar")
+            .css("width", player.health + "%")
+            .attr("aria-valuenow", player.health)
+            .text(player.health + "%");
+    });
+
+    //if you get a successful kill 
+    socket.on('successfulKill', (player) => {
+        //play shoot sound
+        var damage = new THREE.Audio(listener);
+        var audioLoader = new THREE.AudioLoader();
+        audioLoader.load('/static/Sounds/blaster.mp3', function (buffer) {
+            damage.setBuffer(buffer);
+            damage.setLoop(false);
+            damage.setVolume(1);
+            damage.play();
+        });
+        //update kills,deaths and k/d ratio
+        document.getElementById('killsText').innerText = "Kills: " + player.kills;
+        if (player.deaths === 0) {
+            document.getElementById('kdRatioText').innerText = "K/D Ratio: " + player.kills.toFixed(2);
+        } else {
+            document.getElementById('kdRatioText').innerText = "K/D Ratio: " + (player.kills / player.deaths).toFixed(2);
+        }   
+    });
+</script>
+</body>
+
+
+</html>

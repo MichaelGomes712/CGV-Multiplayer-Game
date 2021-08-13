@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<head>
+    <title>Shooty Shooty</title>  
+    <link rel="stylesheet" type="text/css" href="/UI/css/style.css">   
+</head>
+<!-- include functions for UI -->
+<script src="/UI/js/functions.js"></script>
+
+<!-- Styling for the UI main page -->
+<style>
+    body{
+    background-image: linear-gradient(to right, #232526, #414345);
+    background-size: cover;
+    background-position: center;
+    height: 100vh ;
+    padding-top: 30px;
+}
+
+.form-container{
+    width:500px;
+    height: 500px;
+    padding: 30px 100px;
+    background-color: grey;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #000;
+    margin: auto;
+    text-align: center;
+}
+.logo{
+    position: center;
+    width: 300px;
+    height: auto;
+    margin-top:5px;
+    margin-left: 2px;
+    border-radius: 10px;
+    box-shadow: 0 0 5px #000;
+}
+
+ul{
+    padding-top: 30px;
+    list-style-type:none ;
+    margin-top: 25px;
+    margin-right: 25px;
+}
+ul li{
+    padding-top: 10px;
+}
+
+ul li input{
+    text-decoration: none;
+    color: black;
+    padding: 5px 20px;
+    border: 1px solid transparent;
+    transition:0.6s ease ;
+    padding-top: 5px;
+}
+
+ul li input[type=button]:hover{
+    background-color: honeydew;
+    color: black;
+}
+
+#newGame{
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 10%;
+}
+
+#main{
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 10%;
+}
+.newGame{
+    padding-top: 50px;
+}
+#howTo{
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 5%;
+    height: 600px;
+    width: 800px;
+}
+/* #joinGame{
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 5%;
+    height: 600px;
+    width: 800px;
+}
+#join:hover{
+    transition:0.6s ease ;
+    background-color: honeydew;
+    color: black;
+} */
+
+</style>
+
+<!-- bootstrap buttons --> 
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<!-- Latest compiled and minified Bootstrap JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+
+<script>
+    //called on exit button clicked
+function onExit(){
+    window.close();
+}
+
+//load the specific game
+function loadGame(){
+    // window.location.href= "/test.html";
+    var num = document.getElementById('maps').selectedIndex;
+    // Template for design
+    //change this when multi player works
+    var name = document.getElementById('gamertag').value;
+    // alert(name);
+    // alert(name.isEmpty());
+    
+    if (name.length == 0 ){
+        window.alert("Please enter a gamertag.")
+        document.getElementById('gamertag').focus();
+
+    }else{        
+        switch(num){
+            case 0: window.location.href= "http://localhost:3000/?nickname=" + name;
+                    break;
+            case 1: window.location.href= "http://localhost:3001?nickname=" + name;
+                    break; 
+            case 2: window.location.href= "http://localhost:3002?nickname=" + name;
+                    break;
+        }
+
+    }
+}
+
+//show main display elements
+function showMain(id){
+    document.getElementById(id).style.display = 'none'
+    document.getElementById('main').style.display ='block';
+    document.getElementById('name').value = "";
+    document.getElementById('gamertag').value = "";
+    document.getElementById('maps').selectedIndex = 0;
+    
+    
+}
+
+//show info for create game
+function showNewGame(){
+    document.getElementById('main').style.display = 'none';
+    document.getElementById('newGame').style.display = 'block';
+    // document.getElementById('name').focus();
+    document.getElementById('gamertag').focus();
+}
+
+//shows how to play form
+function howToPlay(){
+    document.getElementById('main').style.display = 'none';
+    document.getElementById('howTo').style.display = 'block';
+}
+// //shows join game menu
+// function joinGame(){
+//     document.getElementById('main').style.display = 'none';
+//     document.getElementById('joinGame').style.display='block';
+// }
+
+//loads join game
+// function loadJoinGame(num){
+//     // receives the selected game to join and joins it 
+//     // this is not how it will be implemented once multiplayer is working
+//     switch(num){
+//         case 0: window.location.href= "/test.html?map=1";
+//                 break;
+//         case 1: window.location.href= "/test.html?map=2";
+//                 break; 
+//         case 2: window.location.href= "/test.html?map=3";
+//                 break;
+//     }
+// }
+
+</script>
+<body>
+    <!--Main body container to hold various buttons -->
+    <div class="form-container" id='main'>
+        <img src="/UI/shooty.png" class="logo">
+        <ul class="buttons">    
+            <li>
+                <input class="btn btn-primary" type="button"  value="Start a New Game" onclick="showNewGame()">
+            </li>
+            <!-- <li>
+                <input class="btn btn-success"type="button"  value="Join a Game" onclick="joinGame()">
+            </li> -->
+            <li>
+                <input class="btn btn-info" type="button" value="How to play?" onclick="howToPlay()">
+            </li>
+            <li>
+                <input class="btn btn-danger" type="button" value="Exit" onclick="onExit()">
+            </li>
+        </ul>    
+    </div>
+        <!-- Enter new game requirements -->
+    <div class="form-container" id='newGame'>
+        <h1>Join a New Game</h1>
+        <ul class="buttons">
+            <!-- <li>
+                <input id="name" class="form-control" type="text" placeholder="Enter a new game name..">
+            </li> -->
+            <li>
+                <input id="gamertag" class="form-control" type="text" placeholder="Enter a gamertag..">
+            </li>               
+            <li>
+                <h5>Choose a map:</h5>
+                <select id='maps' class="form-control">
+                    <option value="1">Map 1</option>
+                    <option value="2">Map 2</option>
+                    <option value="3">Map 3</option>
+                </select>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <input class="btn btn-primary" type="button" onclick="loadGame()" value="Start Game">
+            </li>
+            <li>
+                <input class="btn btn-danger" type="button" value="Back" onclick="showMain('newGame')">
+            </li>
+        </ul> 
+    </div>  
+    <!-- Show decription of how to play the game -->
+    <div class='form-container' id="howTo">
+        <h1>How to Play?</h1>
+        <br></br>
+        <!-- Game explanantion -->
+       
+        <h4>Objective:</h4>
+        <p> The game you will be playing is a first person,action shooter.
+            Players will be in a free for all type death match.
+            Primary objective is that the person who accumulates the most kills wins the game.
+            There are 3 maps to choose from.
+            Have fun!
+        </p>
+
+        <!-- Controls for the game -->
+        <br></br>
+        <h4>Controls:</h4> 
+        <h5>Move: WSAD or Arrows</h5>
+        <h5>Jump: Space</h5>
+        <h5>Look: Mouse</h5>
+        <h5>Shoot: Left-click</h5>
+        <h5>Zoom: E</h5>
+        <h5>Pause: Escape Key</h5>
+
+
+        <ul class="buttons">
+            <li><input class="btn btn-danger" type="button" value="Back" onclick="showMain('howTo')"></li>    
+        </ul> 
+    </div>
+    <!-- Show join game form -->
+    <!-- <div class="form-container" id="joinGame">
+        <h1>Join a Game</h1> -->
+
+       <!-- Table to showthe availabe games -->
+        <!-- <table class="table" id='games'>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Game Name</th>
+                    <th scope="col">Host</th> 
+                    <th scope="col">Map</th>
+                    <th scope="col"></th>                   
+                </tr>
+            </thead> -->
+            <!-- Actual records will need to be inserted, this is just a template -->
+            <!-- <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Random</td>
+                    <td>R2D2/C3PO</td>
+                    <td>1</td>
+                    <td><input id="join" class="btn btn-success" value="Join" type="button" onclick="loadJoinGame(0)"></td>
+                </tr>
+            </tbody> -->
+            <!-- end of template for body -->
+        <!-- </table>  
+        <ul class="buttons">    
+            <li><input class="btn btn-danger" type="button" value='Back' onclick="showMain('joinGame')"></li>    
+        </ul>
+    </div> -->
+
+
+    
+</body>
+
+
+</html>
